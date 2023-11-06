@@ -19,4 +19,4 @@ export const setupStore = (preloadedState?: PreloadedState<IRootState>) => {
 
 export type IRootState = ReturnType<typeof rootReducer>;
 export type IAppStore = ReturnType<typeof setupStore>;
-export type AppDispatch = IAppStore["dispatch"];
+export type IAppDispatch = IAppStore["dispatch"];

@@ -7,7 +7,7 @@ export interface IUser {
   lastName: string;
   readonly fullName?: string;
   email: string;
-  password?: string;
+  password: string;
   role: IRoles;
   active: boolean;
   readonly createdAt?: Date;
@@ -16,10 +16,12 @@ export interface IUser {
 
 export interface IClient extends IUser {
   avatar?: string;
-  photos?: IPhoto[];
+  photos: IPhoto[];
 }
 
 export interface ILoginRequest {
   email: string;
   password: string;
 }
+
+export type IRegisterRequest = Omit<IClient, "id" | "fullName" | "createdAt" | "updatedAt">;
