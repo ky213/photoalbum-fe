@@ -11,7 +11,12 @@ export const api = createApi({
     register: builder.mutation<IClient, IRegisterRequest>({
       query: (body) => ({ url: `/register`, method: "POST", body }),
     }),
+    getPhotos: builder.query({
+      query: () => `/users/me`,
+      //TODO: fix "any" typing
+      transformResponse: (response: any) => response.photos,
+    }),
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation } = api;
+export const { useLoginMutation, useRegisterMutation, useGetPhotosQuery } = api;
