@@ -6,11 +6,11 @@ import { useLoginMutation } from "src/data/api";
 export interface ILoginPageProps {}
 
 const LoginPage = (props: ILoginPageProps) => {
-  //@ts-ignore
-  const { data, error, isLoading } = useLoginMutation("bulbasaur");
+  const [login, { data, error, isLoading }] = useLoginMutation();
+
   useEffect(() => {
-    console.log(data, error, isLoading);
-  }, [data, isLoading]);
+    login({ email: "any", password: "any" });
+  }, []);
 
   return (
     <div>

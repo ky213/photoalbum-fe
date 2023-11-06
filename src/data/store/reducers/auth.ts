@@ -1,5 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
+
+import { api } from "src/data/api";
 import type { IRootState } from "..";
 import { IUser } from "src/data/types/client";
 
@@ -14,6 +16,11 @@ const slice = createSlice({
     setAccount: (state, { payload: { account } }: PayloadAction<{ account: IUser }>) => {
       state.account = account;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(api.endpoints.login.matchFulfilled, (state, { payload }) => {
+      state.account = payload;
+    });
   },
 });
 

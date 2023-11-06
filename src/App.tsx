@@ -10,7 +10,7 @@ function App() {
     <MainLayout>
       <ErrorBoundry>
         <Routes>
-          <Route path="/" Component={HomePage} />
+          <Route index path="/" Component={HomePage} />
           <Route path="/login" Component={LoginPage} />
           <Route path="/register" Component={RegiterPage} />
           <Route path="/profile" Component={ProfilePage} />

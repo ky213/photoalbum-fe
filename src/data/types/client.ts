@@ -20,6 +20,6 @@ export interface IClient extends IUser {
 }
 
 export interface ILoginRequest {
-  emmail: string;
+  email: string;
   password: string;
 }
