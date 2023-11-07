@@ -10,7 +10,6 @@ function App() {
   return (
     <MainLayout>
       <CssBaseline />
-
       <ErrorBoundry>
         <Routes>
           <Route index path="/" Component={HomePage} />

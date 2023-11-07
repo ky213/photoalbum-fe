@@ -1,17 +1,5 @@
 import React, { useEffect } from "react";
-import { NavLink } from "react-router-dom";
-import {
-  Grid,
-  Box,
-  Avatar,
-  Typography,
-  TextField,
-  Button,
-  FormControlLabel,
-  Checkbox,
-  Link,
-  Paper,
-} from "@mui/material";
+import { Grid, Box, Avatar, Typography, TextField, Button, Link, Paper } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 
 import { useLoginMutation } from "src/data/api";
