@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, FormEvent } from "react";
 import {
   Container,
   Grid,
@@ -12,11 +12,12 @@ import {
   Checkbox,
   Select,
   MenuItem,
-  InputLabel,
 } from "@mui/material";
-import { LockOutlined, CloudUpload } from "@mui/icons-material";
+import { LockOutlined } from "@mui/icons-material";
 import { MuiFileInput } from "mui-file-input";
+import { useForm, Controller, SubmitHandler } from "react-hook-form";
 
+import { IClient } from "src/data/types/client";
 import { IRoles } from "src/data/types/common";
 import { useRegisterMutation } from "src/data/api";
 
@@ -25,21 +26,16 @@ export interface IRegisterPageProps {}
 const RegisterPage = () => {
   const [photos, setPhotos] = useState<File[] | undefined>([]);
   const [register, { data, error, isLoading }] = useRegisterMutation();
+  const {
+    register: registerField,
+    handleSubmit,
+    formState: { errors, touchedFields },
+  } = useForm<IClient>();
 
-  useEffect(() => {
-    register({
-      firstName: "string",
-      lastName: "string",
-      email: "string",
-      password: "string",
-      role: IRoles.ADMIN,
-      active: true,
-      photos: [],
-      avatar: "",
-    });
-  }, []);
-
-  const handleSubmit = () => {};
+  const onSubmit = (newClient: IClient) => {
+    console.log(newClient);
+    register(newClient);
+  };
 
   return (
     <Container component="main" maxWidth="xs">
@@ -57,17 +53,19 @@ const RegisterPage = () => {
         <Typography component="h1" variant="h5">
           Register new client
         </Typography>
-        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+        <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
                 autoComplete="given-name"
-                name="firstName"
                 required
                 fullWidth
                 id="firstName"
                 label="First Name"
                 autoFocus
+                {...registerField("firstName", { required: true, minLength: 2, maxLength: 50 })}
+                error={Boolean(errors.firstName)}
+                helperText={Boolean(errors.firstName) && "Must be between 2 and 50 characters."}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -76,36 +74,67 @@ const RegisterPage = () => {
                 fullWidth
                 id="lastName"
                 label="Last Name"
-                name="lastName"
                 autoComplete="family-name"
+                {...registerField("lastName", { required: true, minLength: 2, maxLength: 50 })}
+                error={Boolean(errors.lastName)}
+                helperText={Boolean(errors.lastName) && "Must be between 2 and 50 characters."}
               />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField required fullWidth id="email" label="Email Address" name="email" autoComplete="email" />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 required
                 fullWidth
-                name="password"
+                id="email"
+                label="Email Address"
+                autoComplete="email"
+                {...registerField("email", { pattern: /^\S+@\S+\.\S+$/g })}
+                error={Boolean(errors.email)}
+                helperText={Boolean(errors.email) && "Must be a valid email address."}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
                 label="Password"
                 type="password"
                 id="password"
                 autoComplete="new-password"
+                {...registerField("password", {
+                  minLength: 6,
+                  maxLength: 50,
+                  validate: (v) => Boolean(v.match(/\d/g)),
+                })}
+                error={Boolean(errors.password)}
+                helperText={
+                  Boolean(errors.password) && "Must be between 6 and 50 characters and includes one number minimum."
+                }
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField id="avatar" name="avatar" label="Avatar link" fullWidth />
+              <TextField
+                id="avatar"
+                label="Avatar link"
+                fullWidth
+                {...registerField("avatar", {
+                  required: false,
+                  pattern: /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi,
+                })}
+                error={Boolean(errors.avatar)}
+                helperText={Boolean(errors.avatar) && "Must be a valid url"}
+              />
             </Grid>
             <Grid item xs={12}>
-              <Select id="role" name="role" labelId="role-label" required fullWidth>
-                <MenuItem value="USER">User</MenuItem>
+              <Select id="role" labelId="role-label" required fullWidth {...registerField("role")}>
+                <MenuItem value="USER" selected>
+                  User
+                </MenuItem>
                 <MenuItem value="CLIENT">Client</MenuItem>
                 <MenuItem value="ADMIN">Admin</MenuItem>
               </Select>
             </Grid>
             <Grid item xs={12}>
-              <FormControlLabel control={<Checkbox value="active" color="primary" />} label="Active" />
+              <FormControlLabel control={<Checkbox color="primary" {...registerField("active")} />} label="Active" />
             </Grid>
           </Grid>
           <Grid item xs={12} marginTop={2}>
@@ -115,6 +144,9 @@ const RegisterPage = () => {
               onChange={setPhotos}
               value={photos}
               multiple
+              required
+              error={touchedFields.password && photos && photos.length < 1}
+              helperText={"At least one photo should be inserted"}
             />
           </Grid>
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
