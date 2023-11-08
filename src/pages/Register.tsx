@@ -1,4 +1,8 @@
-import React, { useEffect, useState, FormEvent } from "react";
+import React, { useEffect, useState } from "react";
+import { LockOutlined } from "@mui/icons-material";
+import { MuiFileInput } from "mui-file-input";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import {
   Container,
   Grid,
@@ -11,13 +15,15 @@ import {
   FormControlLabel,
   Checkbox,
   Select,
+  FormControl,
+  FormHelperText,
   MenuItem,
+  Alert,
+  LinearProgress,
+  Snackbar,
 } from "@mui/material";
-import { LockOutlined } from "@mui/icons-material";
-import { MuiFileInput } from "mui-file-input";
-import { useForm, Controller, SubmitHandler } from "react-hook-form";
 
-import { IClient, INewClient } from "src/data/types/client";
+import { INewClient } from "src/data/types/client";
 import { IPhotoObject } from "src/data/types/photo";
 import { useRegisterMutation } from "src/data/api";
 import { toBase64 } from "src/shared/utils/files";
@@ -26,17 +32,20 @@ export interface IRegisterPageProps {}
 
 const RegisterPage = () => {
   const [photos, setPhotos] = useState<File[]>([]);
-  const [register, { data, error, isLoading }] = useRegisterMutation();
+  const [register, { data, error, isLoading, isSuccess }] = useRegisterMutation();
+  const gotTo = useNavigate();
   const {
     register: registerField,
     handleSubmit,
-    formState: { errors, touchedFields },
+    formState: { errors: fieldErrors, touchedFields },
   } = useForm<INewClient>();
 
   useEffect(() => {
-    console.log(isLoading);
-    console.log(data);
-    console.log(error);
+    if (!isLoading && isSuccess && !error) {
+      setTimeout(() => {
+        gotTo("/login");
+      }, 2000);
+    }
   }, [isLoading]);
 
   const onSubmit = async (newClient: INewClient) => {
@@ -60,6 +69,7 @@ const RegisterPage = () => {
 
   return (
     <Container component="main" maxWidth="xs">
+      {isLoading && <LinearProgress />}
       <Box
         sx={{
           marginTop: 8,
@@ -68,6 +78,15 @@ const RegisterPage = () => {
           alignItems: "center",
         }}
       >
+        <Snackbar open={Boolean(data)} autoHideDuration={6000} anchorOrigin={{ vertical: "top", horizontal: "right" }}>
+          <Alert severity="success" sx={{ width: "100%" }}>
+            Client registerd Sucessfully
+          </Alert>
+        </Snackbar>
+        {error && (
+          //@ts-ignore
+          <Alert severity="error">{error.data?.message}</Alert>
+        )}
         <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
           <LockOutlined />
         </Avatar>
@@ -85,8 +104,8 @@ const RegisterPage = () => {
                 label="First Name"
                 autoFocus
                 {...registerField("firstName", { required: true, minLength: 2, maxLength: 50 })}
-                error={Boolean(errors.firstName)}
-                helperText={Boolean(errors.firstName) && "Must be between 2 and 50 characters."}
+                error={Boolean(fieldErrors.firstName)}
+                helperText={Boolean(fieldErrors.firstName) && "Must be between 2 and 50 characters."}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -97,8 +116,8 @@ const RegisterPage = () => {
                 label="Last Name"
                 autoComplete="family-name"
                 {...registerField("lastName", { required: true, minLength: 2, maxLength: 50 })}
-                error={Boolean(errors.lastName)}
-                helperText={Boolean(errors.lastName) && "Must be between 2 and 50 characters."}
+                error={Boolean(fieldErrors.lastName)}
+                helperText={Boolean(fieldErrors.lastName) && "Must be between 2 and 50 characters."}
               />
             </Grid>
             <Grid item xs={12}>
@@ -109,8 +128,8 @@ const RegisterPage = () => {
                 label="Email Address"
                 autoComplete="email"
                 {...registerField("email", { pattern: /^\S+@\S+\.\S+$/g })}
-                error={Boolean(errors.email)}
-                helperText={Boolean(errors.email) && "Must be a valid email address."}
+                error={Boolean(fieldErrors.email)}
+                helperText={Boolean(fieldErrors.email) && "Must be a valid email address."}
               />
             </Grid>
             <Grid item xs={12}>
@@ -126,9 +145,10 @@ const RegisterPage = () => {
                   maxLength: 50,
                   validate: (v) => Boolean(v.match(/\d/g)),
                 })}
-                error={Boolean(errors.password)}
+                error={Boolean(fieldErrors.password)}
                 helperText={
-                  Boolean(errors.password) && "Must be between 6 and 50 characters and includes one number minimum."
+                  Boolean(fieldErrors.password) &&
+                  "Must be between 6 and 50 characters and includes one number minimum."
                 }
               />
             </Grid>
@@ -141,18 +161,19 @@ const RegisterPage = () => {
                   required: false,
                   pattern: /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi,
                 })}
-                error={Boolean(errors.avatar)}
-                helperText={Boolean(errors.avatar) && "Must be a valid url"}
+                error={Boolean(fieldErrors.avatar)}
+                helperText={Boolean(fieldErrors.avatar) && "Must be a valid url"}
               />
             </Grid>
             <Grid item xs={12}>
-              <Select id="role" labelId="role-label" required fullWidth {...registerField("role")}>
-                <MenuItem value="USER" selected>
-                  User
-                </MenuItem>
-                <MenuItem value="CLIENT">Client</MenuItem>
-                <MenuItem value="ADMIN">Admin</MenuItem>
-              </Select>
+              <FormControl error={Boolean(fieldErrors.role)} fullWidth>
+                <Select id="role" labelId="role-label" fullWidth {...registerField("role", { required: true })}>
+                  <MenuItem value="USER">User</MenuItem>
+                  <MenuItem value="CLIENT">Client</MenuItem>
+                  <MenuItem value="ADMIN">Admin</MenuItem>
+                </Select>
+                {Boolean(fieldErrors.role) && <FormHelperText color={"danger"}>Must select a role</FormHelperText>}
+              </FormControl>
             </Grid>
             <Grid item xs={12}>
               <FormControlLabel control={<Checkbox color="primary" {...registerField("active")} />} label="Active" />
@@ -170,7 +191,7 @@ const RegisterPage = () => {
               helperText={"At least one photo should be inserted"}
             />
           </Grid>
-          <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+          <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} disabled={isLoading}>
             Submit
           </Button>
           <Grid container justifyContent="flex-end">
