@@ -79,7 +79,7 @@ const LoginPage = (props: ILoginPageProps) => {
           </Snackbar>
           {
             //@ts-ignore
-            error && <Alert severity="error">{error?.data?.message}</Alert>
+            error && <Alert severity="error">{error?.data?.message || "unknown error"}</Alert>
           }
 
           <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>

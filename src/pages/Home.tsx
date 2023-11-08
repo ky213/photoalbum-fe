@@ -1,22 +1,21 @@
 import React from "react";
-import { NavLink, useNavigate } from "react-router-dom";
-import { Grid, AppBar, Toolbar, Typography, Container, Stack, Button } from "@mui/material";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Grid, AppBar, Toolbar, Typography, Container, Stack, Button, Link } from "@mui/material";
 import CameraIcon from "@mui/icons-material/PhotoCamera";
 import IconButton from "@mui/material/IconButton";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 
+import { IRootState } from "src/data/store";
+
 export interface IHomePageProps {}
 
 const HomePage = (props: IHomePageProps) => {
-  const [auth, setAuth] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const gotTo = useNavigate();
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAuth(event.target.checked);
-  };
+  const client = useSelector((state: IRootState) => state.auth.account);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -38,7 +37,7 @@ const HomePage = (props: IHomePageProps) => {
           <Typography variant="h6" color="inherit" noWrap component="div" sx={{ flexGrow: 1 }}>
             Photo Album
           </Typography>
-          <IconButton size="large" onClick={handleMenu} color="inherit">
+          <IconButton size="large" onClick={handleMenu} color="inherit" disabled={!Boolean(client)}>
             <AccountCircle />
           </IconButton>
           <Menu id="menu-appbar" anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>

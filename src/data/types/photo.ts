@@ -5,8 +5,8 @@ export interface IPhoto {
   name: string;
   url: string;
   user: IClient;
-  readonly createdAt?: Date;
-  readonly updatedAt?: Date;
+  readonly createdAt?: string;
+  readonly updatedAt?: string;
 }
 
 export interface IPhotoObject {
