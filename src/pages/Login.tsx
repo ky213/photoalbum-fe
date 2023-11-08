@@ -1,19 +1,46 @@
-import React, { useEffect } from "react";
-import { Grid, Box, Avatar, Typography, TextField, Button, Link, Paper } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import {
+  Grid,
+  Paper,
+  Box,
+  Avatar,
+  Typography,
+  TextField,
+  Button,
+  Link,
+  Alert,
+  LinearProgress,
+  Snackbar,
+} from "@mui/material";
 
+import { ILoginRequest } from "src/data/types/client";
 import { useLoginMutation } from "src/data/api";
 
 export interface ILoginPageProps {}
 
 const LoginPage = (props: ILoginPageProps) => {
-  const [login, { data, error, isLoading }] = useLoginMutation();
+  const [login, { data, error, isLoading, isSuccess }] = useLoginMutation();
+  const gotTo = useNavigate();
+  const {
+    register: registerField,
+    handleSubmit,
+    formState: { errors: fieldErrors, touchedFields },
+  } = useForm<ILoginRequest>();
 
   useEffect(() => {
-    login({ email: "any", password: "any" });
-  }, []);
+    if (!isLoading && isSuccess && !error) {
+      setTimeout(() => {
+        gotTo("/profile");
+      }, 2000);
+    }
+  }, [isLoading]);
 
-  const handleSubmit = () => {};
+  const onSubmit = async (credentials: ILoginRequest) => {
+    login(credentials);
+  };
 
   return (
     <Grid container component="main" sx={{ height: "100vh" }}>
@@ -31,6 +58,7 @@ const LoginPage = (props: ILoginPageProps) => {
         }}
       />
       <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+        {isLoading && <LinearProgress />}
         <Box
           sx={{
             my: 8,
@@ -40,40 +68,63 @@ const LoginPage = (props: ILoginPageProps) => {
             alignItems: "center",
           }}
         >
+          <Snackbar
+            open={Boolean(data)}
+            autoHideDuration={6000}
+            anchorOrigin={{ vertical: "top", horizontal: "right" }}
+          >
+            <Alert severity="success" sx={{ width: "100%" }}>
+              Login Sucess
+            </Alert>
+          </Snackbar>
+          {
+            //@ts-ignore
+            error && <Alert severity="error">{error?.data?.message}</Alert>
+          }
+
           <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-            />
-            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-              Sign In
+          <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  id="email"
+                  label="Email Address"
+                  autoComplete="email"
+                  {...registerField("email", { required: true, pattern: /^\S+@\S+\.\S+$/g })}
+                  error={Boolean(fieldErrors.email)}
+                  helperText={Boolean(fieldErrors.email) && "Must be a valid email address."}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  label="Password"
+                  type="password"
+                  id="password"
+                  autoComplete="new-password"
+                  {...registerField("password", {
+                    required: true,
+                  })}
+                  error={Boolean(fieldErrors.password)}
+                  helperText={Boolean(fieldErrors.password) && "Password required"}
+                />
+              </Grid>
+            </Grid>
+            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} disabled={isLoading}>
+              Submit
             </Button>
-            <Grid container>
+            <Grid container justifyContent="flex-end">
               <Grid item>
                 <Link href="/register" variant="body2">
-                  {"Don't have an account? Sign Up"}
+                  Don't have an account? Sign up
                 </Link>
               </Grid>
             </Grid>
