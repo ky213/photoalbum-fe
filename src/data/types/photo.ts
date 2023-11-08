@@ -8,3 +8,9 @@ export interface IPhoto {
   readonly createdAt?: Date;
   readonly updatedAt?: Date;
 }
+
+export interface IPhotoObject {
+  name: string;
+  extension: string;
+  data: string;
+}

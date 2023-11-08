@@ -1,5 +1,5 @@
 import { IRoles } from "./common";
-import { IPhoto } from "./photo";
+import { IPhoto, IPhotoObject } from "./photo";
 
 export interface IUser {
   readonly id?: string;
@@ -19,9 +19,14 @@ export interface IClient extends IUser {
   photos: IPhoto[];
 }
 
+export interface INewClient extends IUser {
+  avatar?: string;
+  photos: IPhotoObject[];
+}
+
 export interface ILoginRequest {
   email: string;
   password: string;
 }
 
-export type IRegisterRequest = Omit<IClient, "id" | "fullName" | "createdAt" | "updatedAt">;
+export type IRegisterRequest = Omit<INewClient, "id" | "fullName" | "createdAt" | "updatedAt">;

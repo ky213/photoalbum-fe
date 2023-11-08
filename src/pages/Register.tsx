@@ -17,24 +17,45 @@ import { LockOutlined } from "@mui/icons-material";
 import { MuiFileInput } from "mui-file-input";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 
-import { IClient } from "src/data/types/client";
-import { IRoles } from "src/data/types/common";
+import { IClient, INewClient } from "src/data/types/client";
+import { IPhotoObject } from "src/data/types/photo";
 import { useRegisterMutation } from "src/data/api";
+import { toBase64 } from "src/shared/utils/files";
 
 export interface IRegisterPageProps {}
 
 const RegisterPage = () => {
-  const [photos, setPhotos] = useState<File[] | undefined>([]);
+  const [photos, setPhotos] = useState<File[]>([]);
   const [register, { data, error, isLoading }] = useRegisterMutation();
   const {
     register: registerField,
     handleSubmit,
     formState: { errors, touchedFields },
-  } = useForm<IClient>();
+  } = useForm<INewClient>();
 
-  const onSubmit = (newClient: IClient) => {
-    console.log(newClient);
-    register(newClient);
+  useEffect(() => {
+    console.log(isLoading);
+    console.log(data);
+    console.log(error);
+  }, [isLoading]);
+
+  const onSubmit = async (newClient: INewClient) => {
+    try {
+      const processedPhotos: IPhotoObject[] = [];
+      for (const photo of photos) {
+        const result: string = await toBase64(photo);
+
+        processedPhotos.push({
+          name: photo.name.split(".").shift() as string,
+          extension: photo.type.split("/").pop() as string,
+          data: result.split(",").pop() as string,
+        });
+      }
+      newClient.photos = processedPhotos;
+      register(newClient);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
