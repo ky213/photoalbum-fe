@@ -27,6 +27,11 @@ const MainLayout: FC<IMainLAyoutProps> = (props) => {
     setAnchorEl(null);
   };
 
+  const gotToProfile = () => {
+    handleClose();
+    gotTo("/profile");
+  };
+
   const handleLogout = () => {
     logout(null);
     handleClose();
@@ -53,7 +58,7 @@ const MainLayout: FC<IMainLAyoutProps> = (props) => {
             {Boolean(client) && <img src={`http://localhost:3000${client?.avatar}`} alt="" width={30} height={30} />}
           </IconButton>
           <Menu id="menu-appbar" anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-            <MenuItem onClick={() => gotTo("/profile")}>Profile</MenuItem>
+            <MenuItem onClick={gotToProfile}>Profile</MenuItem>
             <MenuItem onClick={handleLogout}>Logout</MenuItem>
           </Menu>
         </Toolbar>
