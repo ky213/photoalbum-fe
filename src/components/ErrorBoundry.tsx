@@ -1,44 +1,13 @@
-import React, { ErrorInfo } from "react";
+import react from "react";
+import { useRouteError } from "react-router-dom";
 
-interface IErrorBoundaryProps {
-  readonly children: JSX.Element | JSX.Element[];
+export default function ErrorBoundary() {
+  let error = useRouteError() as Error;
+  return (
+    <div>
+      <h1>Uh oh, something went terribly wrong 😩</h1>
+      <pre>{error.message || JSON.stringify(error)}</pre>
+      <button onClick={() => (window.location.href = "/")}>Click here to reload the app</button>
+    </div>
+  );
 }
-
-interface IErrorBoundaryState {
-  readonly error: any;
-  readonly errorInfo: ErrorInfo | undefined;
-}
-
-class ErrorBoundary extends React.Component<IErrorBoundaryProps, IErrorBoundaryState> {
-  readonly state: IErrorBoundaryState = { error: undefined, errorInfo: undefined };
-
-  componentDidCatch(error: any, errorInfo: ErrorInfo) {
-    this.setState({
-      error,
-      errorInfo,
-    });
-  }
-
-  render() {
-    const { error, errorInfo } = this.state;
-    if (errorInfo) {
-      const errorDetails =
-        process.env.NODE_ENV === "development" ? (
-          <pre>
-            {error && error.toString()}
-            <br />
-            {errorInfo.componentStack}
-          </pre>
-        ) : undefined;
-      return (
-        <div>
-          <h2 className="error">An unexpected error has occurred.</h2>
-          {errorDetails}
-        </div>
-      );
-    }
-    return this.props.children;
-  }
-}
-
-export default ErrorBoundary;
