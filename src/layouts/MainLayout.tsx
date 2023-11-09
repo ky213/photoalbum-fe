@@ -1,7 +1,7 @@
 import React, { FC, PropsWithChildren, useEffect } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, Link as RouterLink } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { AppBar, Toolbar, Typography } from "@mui/material";
+import { AppBar, Toolbar, Typography, Link, Stack } from "@mui/material";
 import CameraIcon from "@mui/icons-material/PhotoCamera";
 import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
@@ -14,7 +14,7 @@ import { API_URL } from "src/config/constants";
 export interface IMainLAyoutProps extends PropsWithChildren {}
 
 const MainLayout: FC<IMainLAyoutProps> = (props) => {
-  const [logout, { isSuccess, isLoading }] = useLogoutMutation();
+  const [logout, { isSuccess: isLoggedOut, isLoading }] = useLogoutMutation();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const gotTo = useNavigate();
   const client = useSelector((state: IRootState) => state.auth.account);
@@ -40,17 +40,21 @@ const MainLayout: FC<IMainLAyoutProps> = (props) => {
   };
 
   useEffect(() => {
-    if (!isLoading && isSuccess) gotTo("/");
-  }, [isSuccess]);
+    if (!isLoading && isLoggedOut) gotTo("/");
+  }, [isLoggedOut]);
 
   return (
     <>
       <AppBar position="static">
         <Toolbar>
-          <CameraIcon sx={{ mr: 2 }} />
-          <Typography variant="h6" color="inherit" noWrap component="div" sx={{ flexGrow: 1 }}>
-            Photo Album
-          </Typography>
+          <Link component={RouterLink} to="/" color="inherit" sx={{ flexGrow: 1 }} underline="none">
+            <Stack direction="row" spacing={1} alignItems="center">
+              <CameraIcon sx={{ mr: 1 }} />
+              <Typography variant="h6" color="inherit" noWrap component="div">
+                Photo Album
+              </Typography>
+            </Stack>
+          </Link>
           <Typography variant="h6" color="inherit" noWrap component="p">
             {client?.fullName}
           </Typography>
