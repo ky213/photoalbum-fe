@@ -8,6 +8,9 @@ export const api = createApi({
     login: builder.mutation<IClient, ILoginRequest>({
       query: (body) => ({ url: `/login`, method: "POST", body }),
     }),
+    logout: builder.mutation({
+      query: (body) => ({ url: `/logout`, method: "POST" }),
+    }),
     register: builder.mutation<IClient, IRegisterRequest>({
       query: (body) => ({ url: `/register`, method: "POST", body }),
     }),
@@ -19,4 +22,4 @@ export const api = createApi({
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation, useGetPhotosQuery } = api;
+export const { useLoginMutation, useRegisterMutation, useGetPhotosQuery, useLogoutMutation } = api;

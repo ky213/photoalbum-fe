@@ -16,6 +16,9 @@ const slice = createSlice({
     builder.addMatcher(api.endpoints.login.matchFulfilled, (state, { payload }) => {
       state.account = payload;
     });
+    builder.addMatcher(api.endpoints.logout.matchFulfilled, (state) => {
+      state.account = null;
+    });
   },
 });
 

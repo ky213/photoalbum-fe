@@ -1,5 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
+import { Navigate } from "react-router-dom";
 import { ImageList, ImageListItem, ImageListItemBar, ListSubheader, Container } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
 import IconButton from "@mui/material/IconButton";
@@ -9,11 +10,13 @@ import { IRootState } from "src/data/store";
 import { useGetPhotosQuery } from "src/data/api";
 
 const ProfilePage = (props: any) => {
-  const { data, error, isLoading, refetch } = useGetPhotosQuery(null);
+  const query = useGetPhotosQuery(null);
   const photos = useSelector((state: IRootState) => state.photos.list);
+  const client = useSelector((state: IRootState) => state.auth.account);
 
   return (
     <Container maxWidth="lg">
+      {Boolean(!client) && <Navigate to="/login" />}
       <ImageList sx={{ height: "80vh" }}>
         <ImageListItem key="Subheader" cols={2}>
           <ListSubheader component="div">My Album</ListSubheader>

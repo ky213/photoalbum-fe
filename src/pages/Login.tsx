@@ -22,21 +22,31 @@ import { useLoginMutation } from "src/data/api";
 export interface ILoginPageProps {}
 
 const LoginPage = (props: ILoginPageProps) => {
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [login, { data, error, isLoading, isSuccess }] = useLoginMutation();
   const gotTo = useNavigate();
   const {
     register: registerField,
     handleSubmit,
-    formState: { errors: fieldErrors, touchedFields },
+    formState: { errors: fieldErrors },
   } = useForm<ILoginRequest>();
 
   useEffect(() => {
     if (!isLoading && isSuccess && !error) {
+      setErrorMessage(null);
       setTimeout(() => {
         gotTo("/profile");
-      }, 2000);
+      }, 1000);
     }
   }, [isLoading]);
+
+  useEffect(() => {
+    if (error) {
+      //@ts-ignore
+      if ([401, 403].includes(error.originalStatus)) setErrorMessage("Wrong email or password!");
+      else setErrorMessage("Unkown error.");
+    }
+  }, [error]);
 
   const onSubmit = async (credentials: ILoginRequest) => {
     login(credentials);
@@ -79,9 +89,8 @@ const LoginPage = (props: ILoginPageProps) => {
           </Snackbar>
           {
             //@ts-ignore
-            error && <Alert severity="error">{error?.data?.message || "unknown error"}</Alert>
+            errorMessage && <Alert severity="error">{errorMessage}</Alert>
           }
-
           <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
             <LockOutlinedIcon />
           </Avatar>
