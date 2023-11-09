@@ -8,6 +8,7 @@ import IconButton from "@mui/material/IconButton";
 import { IPhoto } from "src/data/types/photo";
 import { IRootState } from "src/data/store";
 import { useGetPhotosQuery } from "src/data/api";
+import { API_URL } from "src//config/constants";
 
 const ProfilePage = (props: any) => {
   const query = useGetPhotosQuery(null);
@@ -24,9 +25,8 @@ const ProfilePage = (props: any) => {
         {photos.map((photo: IPhoto, i: number) => (
           <ImageListItem key={i}>
             <img
-              //TODO:use en variables for host
-              srcSet={`http://localhost:3000${photo.url}?w=248&fit=crop&auto=format&dpr=2 2x`}
-              src={`http://localhost:3000${photo.url}?w=248&fit=crop&auto=format`}
+              srcSet={`${API_URL}${photo.url}?w=248&fit=crop&auto=format&dpr=2 2x`}
+              src={`${API_URL}${photo.url}?w=248&fit=crop&auto=format`}
               alt={photo.name}
               loading="lazy"
             />

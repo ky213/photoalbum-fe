@@ -1,9 +1,9 @@
 ✔ init routes and pages @started(23-11-05 08:41) @done(23-11-07 00:36) @lasted(1d15h55m48s)
 ✔ set protected routes @done(23-11-07 00:36)
 ✔ init redux store @done(23-11-07 00:36)
-☐ set ui components
-☐ alerts and notification
-☐ prettier and eslint
-☐ fix ts-ignore
-☐ add logout
+✔ set ui components @done(23-11-09 16:30)
+✔ alerts and notification @done(23-11-09 16:30)
+✔ prettier and eslint @done(23-11-09 16:30)
+✔ add logout @done(23-11-09 16:30)
+✔ fix ts-ignore @done(23-11-09 16:34)
 

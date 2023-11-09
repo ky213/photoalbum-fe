@@ -16,8 +16,6 @@ export const api = createApi({
     }),
     getPhotos: builder.query({
       query: () => `/users/me`,
-      //TODO: fix "any" typing
-      // transformResponse: (response: any) => response.photos,
     }),
   }),
 });
