@@ -21,6 +21,7 @@ import {
   Alert,
   LinearProgress,
   Snackbar,
+  InputLabel,
 } from "@mui/material";
 
 import { INewClient } from "src/data/types/client";
@@ -167,6 +168,7 @@ const RegisterPage = () => {
             </Grid>
             <Grid item xs={12}>
               <FormControl error={Boolean(fieldErrors.role)} fullWidth>
+                <InputLabel id="role-label">Role</InputLabel>
                 <Select id="role" labelId="role-label" fullWidth {...registerField("role", { required: true })}>
                   <MenuItem value="USER">User</MenuItem>
                   <MenuItem value="CLIENT">Client</MenuItem>
