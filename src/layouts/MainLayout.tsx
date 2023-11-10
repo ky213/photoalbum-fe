@@ -48,7 +48,7 @@ const MainLayout: FC<IMainLAyoutProps> = (props) => {
     <>
       <AppBar position="static">
         <Toolbar>
-          <Link component={RouterLink} to="/" color="inherit" sx={{ flexGrow: 1 }} underline="none">
+          <Link component={RouterLink} to="/" color="inherit" underline="none">
             <Stack direction="row" spacing={1} alignItems="center">
               <CameraIcon sx={{ mr: 1 }} />
               <Typography variant="h6" color="inherit" noWrap component="div">
@@ -56,7 +56,7 @@ const MainLayout: FC<IMainLAyoutProps> = (props) => {
               </Typography>
             </Stack>
           </Link>
-          <Typography variant="h6" color="inherit" noWrap component="p">
+          <Typography variant="h6" color="inherit" noWrap component="p" textAlign="end" sx={{ flexGrow: 1 }}>
             {client?.fullName}
           </Typography>
           <IconButton size="large" onClick={handleMenu} color="inherit" sx={{ ml: "auto" }} disabled={!Boolean(client)}>
