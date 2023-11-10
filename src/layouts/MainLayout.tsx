@@ -18,6 +18,7 @@ const MainLayout: FC<IMainLAyoutProps> = (props) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const gotTo = useNavigate();
   const client = useSelector((state: IRootState) => state.auth.account);
+  const avatarHost = client?.avatar?.startsWith("http") ? "" : API_URL;
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -59,7 +60,7 @@ const MainLayout: FC<IMainLAyoutProps> = (props) => {
             {client?.fullName}
           </Typography>
           <IconButton size="large" onClick={handleMenu} color="inherit" sx={{ ml: "auto" }} disabled={!Boolean(client)}>
-            {Boolean(client) && <img src={`${API_URL}${client?.avatar}`} alt="" width={30} height={30} />}
+            {Boolean(client) && <img src={`${avatarHost}${client?.avatar}`} alt="" width={30} height={30} />}
           </IconButton>
           <Menu id="menu-appbar" anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
             <MenuItem onClick={gotToProfile}>Profile</MenuItem>
